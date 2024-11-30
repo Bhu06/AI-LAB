@@ -1,0 +1,53 @@
+def forward_chaining(kb, alpha, query):
+    """
+    Perform forward chaining to check if the query can be proved.
+    
+    :param kb: List of known facts (atomic sentences)
+    :param alpha: List of definite clauses (e.g., if A and B then C)
+    :param query: Atomic sentence to prove
+    :return: Boolean indicating if the query is provable
+    """
+    # Initialize inferred facts
+    inferred = set(kb)
+    new_inferred = True
+
+    while new_inferred:
+        new_inferred = False
+        for clause in alpha:
+            premises, conclusion = clause[:-1], clause[-1]
+
+            # If all premises are inferred and the conclusion is not yet inferred
+            if all(p in inferred for p in premises) and conclusion not in inferred:
+                inferred.add(conclusion)
+                new_inferred = True
+                print(f"Inferred: {conclusion}")
+                
+                # Stop if we infer the query
+                if conclusion == query:
+                    return True
+    
+    return query in inferred
+
+
+if __name__ == "__main__":
+    # Input knowledge base (atomic facts)
+    print("Enter known facts (comma-separated):")
+    kb = input().strip().split(',')
+
+    # Input definite clauses
+    print("Enter definite clauses as 'premises->conclusion' (comma-separated premises):")
+    n = int(input("Enter number of clauses: "))
+    alpha = []
+    for _ in range(n):
+        rule = input("Clause: ").strip()
+        premises, conclusion = rule.split('->')
+        alpha.append(premises.split(',') + [conclusion.strip()])
+
+    # Input query
+    query = input("Enter query (atomic sentence): ").strip()
+
+    # Perform forward chaining
+    if forward_chaining(kb, alpha, query):
+        print(f"The query '{query}' is provable.")
+    else:
+        print(f"The query '{query}' is NOT provable.")
