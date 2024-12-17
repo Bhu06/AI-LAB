@@ -5,7 +5,6 @@ import math
 def calculate_conflicts(board):
     n = len(board)
     conflicts = 0
-    
     for i in range(n):
         for j in range(i + 1, n):
             if board[i] == board[j] or abs(board[i] - board[j]) == abs(i - j):
@@ -13,7 +12,7 @@ def calculate_conflicts(board):
     return conflicts
 
 # Function to perform simulated annealing
-def simulated_annealing(board, max_steps=1000, initial_temp=100, cooling_rate=0.99):
+def simulated_annealing(board, max_steps=5000, initial_temp=200, cooling_rate=0.995):
     current_conflicts = calculate_conflicts(board)
     temperature = initial_temp
     n = len(board)
@@ -62,16 +61,18 @@ def main():
         print("Error: The number of positions must match the number of queens.")
         return
     
-    solution = simulated_annealing(board)
+    # Attempt multiple restarts
+    for attempt in range(5):  # Up to 5 attempts
+        solution = simulated_annealing(board)
+        if solution:
+            print(f"\nSolution found on attempt {attempt + 1}:")
+            for row in range(n):
+                line = ['.'] * n
+                line[solution[row]] = 'Q'
+                print(" ".join(line))
+            return
     
-    if solution:
-        print("\nSolution found:")
-        for row in range(n):
-            line = ['.'] * n
-            line[solution[row]] = 'Q'
-            print(" ".join(line))
-    else:
-        print("No solution found.")
+    print("No solution found after multiple attempts.")
 
 if __name__ == "__main__":
     main()
